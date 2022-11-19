@@ -20,7 +20,7 @@ function onInput(event: Event) {
     class="fixed bottom-8 left-2/4 bg-white rounded-4xl shadow-xl z-10 px-8 py-6 w-11/12 max-w-[800px]"
     style="transform: translateX(-50%)"
   >
-    <form class="w-full space-y-6">
+    <form class="w-full space-y-6" @submit.prevent="">
       <label for="query" class="font-medium text-xl text-center block">
         Find weekly markets and flea markets in Berlin
       </label>
