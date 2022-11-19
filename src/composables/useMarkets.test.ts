@@ -16,6 +16,10 @@ vi.mock("@/core/infrastructure/market/service", () => {
               postalCode: "Some postal code",
               street: "Some street",
             },
+            coordinates: {
+              latitude: 0,
+              longitude: 0,
+            },
           },
         ];
 
@@ -45,6 +49,10 @@ describe("getMarkets", () => {
           district: "Some place",
           postalCode: "Some postal code",
           street: "Some street",
+        },
+        coordinates: {
+          latitude: 0,
+          longitude: 0,
         },
       },
     ]);

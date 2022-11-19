@@ -18,6 +18,10 @@ class MockMarketRepository implements MarketRepository {
           postalCode: "Postal code",
           street: "Street",
         },
+        coordinates: {
+          latitude: 0,
+          longitude: 0,
+        },
       },
     ]);
   }
@@ -28,7 +32,7 @@ describe("getMarkets", () => {
     it("returns the list of all markets", async () => {
       const repository = new MockMarketRepository();
       const service = new MarketServiceImpl(repository);
-      expect(await service.getMarkets()).toEqual([
+      expect(await service.getMarkets()).toEqual<Market[]>([
         {
           id: "1",
           name: "Name",
@@ -36,6 +40,10 @@ describe("getMarkets", () => {
             district: "District",
             postalCode: "Postal code",
             street: "Street",
+          },
+          coordinates: {
+            latitude: 0,
+            longitude: 0,
           },
         },
       ]);
