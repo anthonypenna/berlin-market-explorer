@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { MapboxMap } from "vue-mapbox-ts";
 
-const message = ref("hello world");
+const accessToken = import.meta.env.VITE_APP_MAPBOX_ACCESS_TOKEN;
 </script>
 
 <template>
-  <div>{{ message }}</div>
+  <main class="h-screen">
+    <MapboxMap :accessToken="accessToken" />
+  </main>
 </template>
