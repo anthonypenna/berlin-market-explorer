@@ -4,15 +4,49 @@ import { describe, expect, it } from "vitest";
 import { MarketServiceImpl } from "@/core/infrastructure/market/service";
 
 class MockMarketRepository implements MarketRepository {
-  getMarkets(): Promise<Market[]> {
-    return Promise.resolve([]);
+  getMarkets(query = ""): Promise<Market[]> {
+    if (query === "none") {
+      return Promise.resolve([]);
+    }
+
+    return Promise.resolve<Market[]>([
+      {
+        id: "1",
+        name: "Name",
+        address: {
+          district: "District",
+          postalCode: "Postal code",
+          street: "Street",
+        },
+      },
+    ]);
   }
 }
 
 describe("getMarkets", () => {
-  it("gets the list of markets", async () => {
-    const repository = new MockMarketRepository();
-    const service = new MarketServiceImpl(repository);
-    expect(await service.getMarkets()).toEqual([]);
+  describe("when no query is specified", () => {
+    it("returns the list of all markets", async () => {
+      const repository = new MockMarketRepository();
+      const service = new MarketServiceImpl(repository);
+      expect(await service.getMarkets()).toEqual([
+        {
+          id: "1",
+          name: "Name",
+          address: {
+            district: "District",
+            postalCode: "Postal code",
+            street: "Street",
+          },
+        },
+      ]);
+    });
+  });
+
+  describe("when a query is specified", () => {
+    it("returns the list of available markets", async () => {
+      const repository = new MockMarketRepository();
+      const service = new MarketServiceImpl(repository);
+      expect(await service.getMarkets("none")).toEqual([]);
+    });
   });
 });

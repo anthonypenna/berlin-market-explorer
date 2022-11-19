@@ -1,15 +1,60 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { MarketRepositoryImpl } from "@/core/infrastructure/market/repository";
+import type { GetMarketListDto } from "@/core/infrastructure/market/dto";
+import type { Market } from "@/core/domain/market/entity";
 
 describe("getMarkets", () => {
   beforeEach(() => {
-    globalThis.fetch = vi.fn().mockResolvedValue({
-      json: vi.fn().mockResolvedValue({ features: [] }),
+    globalThis.fetch = vi.fn<any>((url: string) => {
+      if (url.includes("none")) {
+        return Promise.resolve({
+          json: vi.fn().mockResolvedValue({
+            features: [],
+          }),
+        });
+      }
+
+      return Promise.resolve({
+        json: vi.fn().mockResolvedValue(<GetMarketListDto>{
+          features: [
+            {
+              properties: {
+                data: {
+                  id: "1",
+                  bezeichnung: "Name",
+                  bezirk: "District",
+                  plz: "Postal code",
+                  strasse: "Street",
+                },
+              },
+            },
+          ],
+        }),
+      });
     });
   });
 
-  it("returns the list of markets", async () => {
-    const repository = new MarketRepositoryImpl();
-    expect(await repository.getMarkets()).toEqual([]);
+  describe("when no query is specified", () => {
+    it("returns the list of all markets", async () => {
+      const repository = new MarketRepositoryImpl();
+      expect(await repository.getMarkets()).toEqual<Market[]>([
+        {
+          id: "1",
+          name: "Name",
+          address: {
+            district: "District",
+            postalCode: "Postal code",
+            street: "Street",
+          },
+        },
+      ]);
+    });
+  });
+
+  describe("when a query is specified", () => {
+    it("returns the list of available markets", async () => {
+      const repository = new MarketRepositoryImpl();
+      expect(await repository.getMarkets("none")).toEqual<Market[]>([]);
+    });
   });
 });

@@ -3,9 +3,9 @@ import type { MarketRepository } from "@/core/domain/market/repository";
 import type { GetMarketListDto } from "@/core/infrastructure/market/dto";
 
 export class MarketRepositoryImpl implements MarketRepository {
-  async getMarkets(): Promise<Market[]> {
+  async getMarkets(query = ''): Promise<Market[]> {
     const response = await fetch(
-      "https://www.berlin.de/sen/web/service/maerkte-feste/wochen-troedelmaerkte/index.php/index/all.geojson?q="
+      "https://www.berlin.de/sen/web/service/maerkte-feste/wochen-troedelmaerkte/index.php/index/all.geojson?q=" + query
     );
     const json: GetMarketListDto = await response.json();
     return json.features.map((market) => ({
