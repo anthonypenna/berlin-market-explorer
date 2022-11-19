@@ -12,17 +12,16 @@ export function useMarkets() {
 
   const marketsCache: Record<string, Market[]> = {};
 
-  watch(query, (query) => {
+  watch(query, getMarkets);
+
+  async function getMarkets(query = "") {
     if (query in marketsCache) {
       markets.value = marketsCache[query];
       return;
     }
 
-    getMarkets(query);
-  });
-
-  async function getMarkets(query = "") {
     markets.value = await marketService.getMarkets(query);
+    marketsCache[query] = markets.value;
   }
 
   return { markets, query, getMarkets };
