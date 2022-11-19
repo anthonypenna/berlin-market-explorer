@@ -30,7 +30,7 @@ const emit = defineEmits<{
     >
       <MapboxPopup :offset="[0, -50]">
         <ul>
-          <li>{{ market.name }}</li>
+          <li class="font-bold text-sm">{{ market.name }}</li>
           <li>
             {{ market.address.street }}, {{ market.address.postalCode }},
             {{ market.address.district }}
@@ -40,3 +40,12 @@ const emit = defineEmits<{
     </MapboxMarker>
   </MapboxMap>
 </template>
+
+<style>
+.mapboxgl-popup-content {
+  width: fit-content;
+  white-space: nowrap;
+  padding: 16px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+</style>
