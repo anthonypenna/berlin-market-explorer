@@ -28,7 +28,7 @@ const emit = defineEmits<{
         lon: market.coordinates.longitude,
       }"
     >
-      <MapboxPopup>
+      <MapboxPopup :offset="[0, -50]">
         <ul>
           <li>{{ market.name }}</li>
           <li>
