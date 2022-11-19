@@ -6,4 +6,8 @@ export interface Market {
     postalCode: string;
     district: string;
   };
+  coordinates: {
+    latitude: number;
+    longitude: number;
+  };
 }

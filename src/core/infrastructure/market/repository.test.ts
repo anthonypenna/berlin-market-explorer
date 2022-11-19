@@ -25,6 +25,8 @@ describe("getMarkets", () => {
                   bezirk: "District",
                   plz: "Postal code",
                   strasse: "Street",
+                  _wgs84_lat: "0",
+                  _wgs84_lon: "0",
                 },
               },
             },
@@ -45,6 +47,10 @@ describe("getMarkets", () => {
             district: "District",
             postalCode: "Postal code",
             street: "Street",
+          },
+          coordinates: {
+            latitude: 0,
+            longitude: 0,
           },
         },
       ]);
