@@ -2,6 +2,7 @@ import type { Market } from "@/core/domain/market/entity";
 import type { MarketService } from "@/core/domain/market/service";
 import { describe, expect, it } from "vitest";
 import { MarketStore } from "@/stores/markets";
+import { MarketCache } from "@/core/infrastructure/market/cache";
 
 const mockMarket: Market = {
   id: "1",
@@ -31,13 +32,16 @@ class MockMarketService implements MarketService {
 describe("getMarkets", () => {
   it("gets the list of markets", async () => {
     const marketService = new MockMarketService();
-    const marketStore = new MarketStore(marketService);
+    const marketCache = new MarketCache();
+    const marketStore = new MarketStore(marketService, marketCache);
     expect(marketStore.markets$.value).toEqual([]);
 
     await marketStore.getMarkets();
     expect(marketStore.markets$.value).toEqual([mockMarket]);
+    expect(marketCache.get("")).toEqual([mockMarket]);
 
     await marketStore.getMarkets("bar");
     expect(marketStore.markets$.value).toEqual([]);
+    expect(marketCache.get("bar")).toEqual([]);
   });
 });
