@@ -1,18 +1,8 @@
 <script setup lang="ts">
-export interface Emits {}
+import { marketStore } from "@/stores/markets";
+import { useSubject } from "@vueuse/rxjs";
 
-const props = defineProps<{
-  modelValue: string;
-}>();
-
-const emit = defineEmits<{
-  (event: "update:modelValue", value: string): void;
-}>();
-
-function onInput(event: Event) {
-  const input = event.target as HTMLInputElement;
-  emit("update:modelValue", input.value);
-}
+const query = useSubject(marketStore.query$);
 </script>
 
 <template>
@@ -29,8 +19,7 @@ function onInput(event: Event) {
         id="query"
         placeholder="Search by name, district, address etc..."
         class="bg-gray-100 px-5 py-3 w-full outline-[#4668F2] transition rounded-full"
-        :value="props.modelValue"
-        @input="onInput"
+        v-model="query"
       />
     </form>
   </section>

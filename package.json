@@ -11,11 +11,14 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "@vueuse/rxjs": "^9.5.0",
+    "rxjs": "^7.5.7",
     "vue": "^3.2.41",
     "vue-mapbox-ts": "^0.9.3"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.1.4",
+    "@testing-library/vue": "^6.6.1",
     "@types/jsdom": "^20.0.0",
     "@types/node": "^16.11.68",
     "@vitejs/plugin-vue": "^3.1.2",

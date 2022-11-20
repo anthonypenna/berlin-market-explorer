@@ -1,27 +1,34 @@
 <script setup lang="ts">
+import { marketStore } from "@/stores/markets";
 import { MapboxMap, MapboxMarker, MapboxPopup } from "vue-mapbox-ts";
-import type { Market } from "@/core/domain/market/entity";
+import { useSubject, useSubscription } from "@vueuse/rxjs";
+import { debounce } from "@/utils/debounce";
 
-const props = defineProps<{
-  accessToken: string;
-  markets: Market[];
-}>();
+const accessToken = import.meta.env.VITE_APP_MAPBOX_ACCESS_TOKEN;
+const markets = useSubject(marketStore.markets$);
 
-const emit = defineEmits<{
-  (event: "load"): void;
-}>();
+const debouncedGetMarkets = debounce(
+  (query: string) => marketStore.getMarkets(query),
+  500
+);
+
+useSubscription(
+  marketStore.query$.subscribe((query) => {
+    debouncedGetMarkets(query);
+  })
+);
 </script>
 
 <template>
   <MapboxMap
-    :accessToken="props.accessToken"
+    :accessToken="accessToken"
     :center="{ lat: 52.5, lon: 13.5 }"
     :zoom="10.5"
-    mapStyle="light-v10"
-    @loaded="emit('load')"
+    mapStyle="light-v11"
+    @loaded="marketStore.getMarkets()"
   >
     <MapboxMarker
-      v-for="market of props.markets"
+      v-for="market of markets"
       :key="market.id"
       :lngLat="{
         lat: market.coordinates.latitude,

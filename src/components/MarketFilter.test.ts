@@ -1,29 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { mount } from "@vue/test-utils";
+import { render, screen } from "@testing-library/vue";
 import MarketFilter from "@/components/MarketFilter.vue";
+import { marketStore } from "@/stores/markets";
 
 describe("<MarketFilter />", () => {
   it("renders correctly", async () => {
-    const wrapper = mount(MarketFilter, {
-      props: {
-        modelValue: "",
-      },
-    });
+    render(MarketFilter);
 
-    expect(wrapper.get("input").element.value).toEqual("");
+    screen.getByText("Find weekly markets and flea markets in Berlin");
+    expect(screen.getByRole<HTMLInputElement>("textbox").value).toEqual("");
 
-    await wrapper.setProps({ modelValue: "Spandau" });
-    expect(wrapper.get("input").element.value).toEqual("Spandau");
-  });
-
-  it("emits the correct events", () => {
-    const wrapper = mount(MarketFilter, {
-      props: {
-        modelValue: "",
-      },
-    });
-
-    wrapper.get("input").setValue("foo");
-    expect(wrapper.emitted()).toHaveProperty("update:modelValue");
+    await marketStore.query$.next("hello");
+    expect(screen.getByRole<HTMLInputElement>("textbox").value).toEqual(
+      "hello"
+    );
   });
 });
