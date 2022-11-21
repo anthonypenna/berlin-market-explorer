@@ -1,52 +1,115 @@
-# berlin-market-explorer
+# Berlin Market Explorer
 
-This template should help get you started developing with Vue 3 in Vite.
+A small app for exploring weekly markets and flea markets in Berlin, built with Vue 3, TypeScript and RxJS.
 
-## Recommended IDE Setup
+<figure>
+    <img src="./docs/assets/preview.png" width="600" style="border-radius: 8px;" />
+</figure>
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+## Features
 
-## Type Support for `.vue` Imports in TS
+The app allows you to view available markets in Berlin via an interactive 3D map, powered by Mapbox.
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
+Each market is represented by a blue marker, and clicking on it opens a popup that shows its name and its address (street, postal code, and district).
 
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
+It's possible to filter the markets by using the input field in the bottom of the screen, and querying by market name, district, address, etc...
 
-1. Disable the built-in TypeScript Extension
-    1) Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-    2) Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
+The market list is fetched via a public API, and a new HTTP request is dispatched upon typing in the input field.
 
-## Customize configuration
+In order to avoid spamming the API with unnecessary calls, requests are debounced by 500ms, and results are cached.
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+## Architecture
 
-## Project Setup
+The app is built using what's called a "Reactive Clean Architecture", that helps us keep our business logic isolated from the UI, and very very easy to test.
 
-```sh
-pnpm install
+It does so, by separating the app into 4 distinct layers, which are:
+
+### Domain
+
+This layer simply defines a bunch of interfaces (what entities make up our domain, and what interface the infrastructure layer should adhere to).
+
+### Infrastructure
+
+In this layer, we implement the interfaces defined in our domain layer, communicate with the outer world, and map data received from outside to something that our domain can understand.
+
+### Store
+
+This layer connects our business logic to the UI, and contains our reactive global state. This layer is purposely framework-agnostic, which allows us to have a reactive view model (using the observer pattern), and be able to plug-in any UI we want, without having to change our business logic.
+
+### UI
+
+This is the final layer. If you look at the code, you'll notice there's no props, no events emitted, no local state. Each component simply observes whatever data they need from the store. This makes our components dumb, and very easy to test.
+
+## Tradeoffs
+
+The Mapbox library (`mapboxgl-js`) is very powerful, but it is also very low level, forcing you to use a verbose and imperative approach to working with your map.
+
+For example, let's say I want to add a marker:
+
+```ts
+// You need a pointer to the actual map instance
+const map = new Map(...)
+
+// You need to manually create the marker
+const marker = new Marker(...)
+
+// Manually set the marker's coordinates
+market.setLngLat({lat: x, lon: y})
+
+// And finally add it to the map
+marker.addTo(map)
 ```
 
-### Compile and Hot-Reload for Development
+This is a very simple use-case, but it's already so much work for something that should be as simple as:
 
-```sh
-pnpm dev
+```html
+<MapboxMap>
+  <MapboxMarker lat="x" lon="y" />
+</MapboxMap>
 ```
 
-### Type-Check, Compile and Minify for Production
+I wanted to maintain this simple and declarative approach, but, considering the time constraints I had, I decided against creating declarative Map, Marker and Popup components my self, and instead opted to use the `vue-mapbox-ts` package, trading off full control over the map, in favor of simpler code.
 
-```sh
-pnpm build
+## Getting started
+
+### Setting up the environment
+
+First, you'll need to get a Mapbox access token, and place it in a `.env.local` file like this:
+
+```
+VITE_APP_MAPBOX_ACCESS_TOKEN="<your-access-token>"
 ```
 
-### Run Unit Tests with [Vitest](https://vitest.dev/)
+To get a token, create a free account at [mapbox.com](https://mapbox.com), then go to your profile and you should have a default public token. Simply copy and paste it into your `.env.local` file.
 
-```sh
-pnpm test:unit
+Once you're done, install dependencies with:
+
+```
+$ pnpm i
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+## Scripts
 
-```sh
-pnpm lint
+**Run unit tests**
+
+```
+$ pnpm test:unit
+```
+
+**Launch local dev server**
+
+```
+$ pnpm dev
+```
+
+**Build for production**
+
+```
+$ pnpm build
+```
+
+**Serve the production build**
+
+```
+$ pnpm preview
 ```
